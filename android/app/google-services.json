@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1073793909493",
+    "project_id": "flutter-kafe-exam",
+    "storage_bucket": "flutter-kafe-exam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073793909493:android:78c1a4c38ce2f80cafbbbc",
+        "android_client_info": {
+          "package_name": "com.flutter.kafe_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMWkTrXoqmXnR0NVNfM75oA-Uq5UUD6QQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073793909493:android:abe3b36290523725afbbbc",
+        "android_client_info": {
+          "package_name": "com.flutter.kafe_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMWkTrXoqmXnR0NVNfM75oA-Uq5UUD6QQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
