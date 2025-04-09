@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -75,6 +76,53 @@ class FirebaseProvider extends StateNotifier<FirebaseAuth?> {
       handleGenericError(e, "Erreur inconnue lors de la connexion");
     }
     return null;
+  }
+
+  Future<void> updateUserEmail(String newEmail, String password) async {
+    try {
+      // Récupérer l'utilisateur actuellement authentifié
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception("Aucun utilisateur connecté");
+      }
+
+      // Créer les identifiants de ré-authentification
+      AuthCredential credential = EmailAuthProvider.credential(
+        email:
+            user.email ?? "", // Utilisation de l'email actuel de l'utilisateur
+        password: password, // Mot de passe actuel de l'utilisateur
+      );
+
+      // Tentative de ré-authentification de l'utilisateur avant de pouvoir modifier l'email
+      await user.reauthenticateWithCredential(credential);
+      print("Ré-authentification réussie.");
+
+      // Mettre à jour l'email dans Firebase Authentication
+      await user.updateEmail(newEmail);
+      print("Email mis à jour dans Firebase Authentication.");
+
+      // Ensuite, mettre à jour l'email dans Firestore
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'email': newEmail},
+      );
+      print("Email mis à jour dans Firestore.");
+    } on FirebaseAuthException catch (e) {
+      // Gérer les erreurs de FirebaseAuth
+      if (e.code == 'requires-recent-login') {
+        print(
+          'L\'utilisateur doit se ré-authentifier avant de changer son email.',
+        );
+      } else if (e.code == 'wrong-password') {
+        print('Mot de passe incorrect. Impossible de ré-authentifier.');
+      } else if (e.code == 'email-already-in-use') {
+        print('Cet email est déjà utilisé par un autre compte.');
+      } else {
+        print('Erreur lors de la mise à jour de l\'email : $e');
+      }
+    } catch (e) {
+      print('Erreur inconnue : $e');
+    }
   }
 
   void handleAuthException(FirebaseAuthException e, String context) {

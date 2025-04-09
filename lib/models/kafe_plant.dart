@@ -1,14 +1,15 @@
+import 'package:kafe_app/models/gato_scores.dart';
+
 import 'kafe_type.dart';
 
-class KafePlant {
+class KafePlant implements KafeType {
   final KafeType? kafeType;
   final DateTime? plantedAt;
 
   KafePlant({required this.kafeType, required this.plantedAt});
 
-  /// Constructeur vide pour les plantes non initialisées
   factory KafePlant.empty() {
-    return KafePlant(kafeType: null, plantedAt: null);
+    return KafePlant(kafeType: KafeType.empty(), plantedAt: null);
   }
 
   factory KafePlant.fromMap(Map<String, dynamic>? data) {
@@ -33,9 +34,25 @@ class KafePlant {
     };
   }
 
-  KafePlant copyWith({KafeType? cafeType, DateTime? plantedAt}) {
+  KafePlant copyWith({
+    String? name,
+    Duration? growTime,
+    int? costDeeVee,
+    double? fruitWeight,
+    GatoScores? gato,
+    KafeType? kafeType,
+    DateTime? plantedAt,
+  }) {
     return KafePlant(
-      kafeType: cafeType ?? this.kafeType,
+      kafeType:
+          kafeType ??
+          this.kafeType?.copyWith(
+            name: name,
+            growTime: growTime,
+            costDeeVee: costDeeVee,
+            fruitWeight: fruitWeight,
+            gato: gato,
+          ),
       plantedAt: plantedAt ?? this.plantedAt,
     );
   }
@@ -58,4 +75,19 @@ class KafePlant {
   }
 
   bool get isEmpty => kafeType == null || plantedAt == null;
+
+  @override
+  String get name => kafeType?.name ?? '';
+
+  @override
+  Duration get growTime => kafeType?.growTime ?? Duration.zero;
+
+  @override
+  int get costDeeVee => kafeType?.costDeeVee ?? 0;
+
+  @override
+  double get fruitWeight => kafeType?.fruitWeight ?? 0.0;
+
+  @override
+  GatoScores get gato => kafeType?.gato ?? GatoScores.empty();
 }

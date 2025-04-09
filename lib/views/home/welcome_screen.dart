@@ -37,7 +37,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       _fadeController.reverse();
 
       Future.delayed(const Duration(seconds: 2), () {
-        context.go('/plantation');
+        context.go('/exploitation');
       });
     });
   }

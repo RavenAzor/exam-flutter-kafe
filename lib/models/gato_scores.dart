@@ -11,6 +11,10 @@ class GatoScores {
     required this.odorat,
   });
 
+  static GatoScores empty() {
+    return GatoScores(gout: 0, amertume: 0, teneur: 0, odorat: 0);
+  }
+
   factory GatoScores.fromMap(Map<String, dynamic> data) {
     return GatoScores(
       gout: data['gout'] ?? 0,

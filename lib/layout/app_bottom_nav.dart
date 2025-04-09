@@ -17,7 +17,7 @@ class AppBottomNav extends HookConsumerWidget {
       indexNotifier.changeIndex(index);
       switch (index) {
         case 0:
-          context.go('/plantation');
+          context.go('/exploitation');
           break;
         case 1:
           context.go('/stocks');
@@ -33,7 +33,10 @@ class AppBottomNav extends HookConsumerWidget {
 
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.nature), label: 'Plantation'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.nature),
+          label: 'Exploitation',
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.inventory), label: 'Stocks'),
         BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Concours'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),

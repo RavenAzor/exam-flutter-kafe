@@ -1,24 +1,37 @@
+import 'package:kafe_app/models/kafe_type.dart';
+
 class Stocks {
   final String kafeType;
-  final double grainWeight;
+  double grainWeight;
+  Map<String, int> plantsQuantities;
 
-  Stocks({required this.kafeType, required this.grainWeight});
+  Stocks({
+    required this.kafeType,
+    required this.grainWeight,
+    Map<String, int>? plantsQuantities,
+  }) : plantsQuantities = plantsQuantities ?? {};
 
-  factory Stocks.fromMap(Map<String, dynamic> data) {
-    return Stocks(
-      kafeType: data['cafeType'],
-      grainWeight: (data['grainWeight'] ?? 0.0).toDouble(),
+  void addPlant(KafeType plant) {
+    plantsQuantities.update(
+      plant.name,
+      (value) => value + 1,
+      ifAbsent: () => 1,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'cafeType': kafeType, 'grainWeight': grainWeight};
+    return {
+      'kafeType': kafeType,
+      'grainWeight': grainWeight,
+      'plantsQuantities': plantsQuantities,
+    };
   }
 
-  Stocks copyWith({String? cafeType, double? grainWeight}) {
+  factory Stocks.fromMap(Map<String, dynamic> map) {
     return Stocks(
-      kafeType: cafeType ?? this.kafeType,
-      grainWeight: grainWeight ?? this.grainWeight,
+      kafeType: map['kafeType'] ?? '',
+      grainWeight: (map['grainWeight'] ?? 0).toDouble(),
+      plantsQuantities: Map<String, int>.from(map['plantsQuantities'] ?? {}),
     );
   }
 }

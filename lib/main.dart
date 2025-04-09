@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:kafe_app/firebase_options.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:kafe_app/theme.dart';
 import 'package:kafe_app/constants/constants.dart';
 import 'logic/provider/firebase_auth_provider.dart';
 import 'package:kafe_app/routers/router.dart';

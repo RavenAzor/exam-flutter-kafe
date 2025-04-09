@@ -31,12 +31,3 @@ BorderRadius buttonBorderRadius() {
 EdgeInsets textFieldPadding() {
   return const EdgeInsets.symmetric(horizontal: 20, vertical: 10);
 }
-
-// InputDecoration textFormFieldDecoration(String lableText) {
-//   return InputDecoration(
-//     labelText: lableText,
-//     labelStyle: const TextStyle(fontSize: 18),
-//     border: OutlineInputBorder(borderRadius: buttonBorderRadius()),
-//     contentPadding: textFieldPadding(),
-//   );
-// }

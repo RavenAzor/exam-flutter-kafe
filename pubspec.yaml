@@ -51,6 +51,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/kafe-logo.jpg
+    - assets/images/plant.png
+    - assets/images/grain.png
     - assets/sounds/kafe_background_sound.mp3
     - assets/video/moving.mp4
 

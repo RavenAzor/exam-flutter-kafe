@@ -3,14 +3,20 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kafe_app/models/user.dart' as app;
 import 'package:kafe_app/logic/provider/firebase_auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kafe_app/logic/provider/exploitation_provider.dart';
 
-final userNotifier = StateNotifierProvider<UserNotifier, app.User?>(
-  (ref) => UserNotifier(ref),
+import '../../models/exploitation.dart';
+import '../../models/field.dart';
+import '../../models/kafe_type.dart';
+import '../../models/stocks.dart';
+
+final userNotifier = StateNotifierProvider<UserProvider, app.User?>(
+  (ref) => UserProvider(ref),
 );
 
-class UserNotifier extends StateNotifier<app.User?> {
+class UserProvider extends StateNotifier<app.User?> {
   final Ref ref;
-  UserNotifier(this.ref) : super(null);
+  UserProvider(this.ref) : super(null);
 
   Future<app.User?> registerInFirebase(
     String email,
@@ -36,8 +42,20 @@ class UserNotifier extends StateNotifier<app.User?> {
           lastName: lastName,
         );
 
-        await createNewUser(newUser); // Enregistre dans Firestore ou autre
-        state = newUser; // Stocke dans le state
+        await createNewUser(newUser);
+
+        final initialField = Field.empty("Champ principal");
+
+        final newExploitation = Exploitation(
+          fields: [initialField],
+          userId: newUser.id,
+        );
+
+        await ref
+            .read(exploitationNotifier.notifier)
+            .createExploitation(newExploitation);
+
+        state = newUser;
         return newUser;
       }
     } catch (e) {
@@ -54,34 +72,72 @@ class UserNotifier extends StateNotifier<app.User?> {
           .doc(user.id)
           .set(user.toMap());
       state = user;
+
+      if (user.id != null) {
+        await createStockForUser(user.id!);
+      } else {
+        print("Erreur: L'id de l'utilisateur est nul");
+      }
     } catch (e) {
       print("Create user error: $e");
     }
   }
 
-  // Future<bool> loginInFirebase(String email, String password) async {
-  //   try {
-  //     final userCredential = await ref
-  //         .read(firebaseNotifier.notifier)
-  //         .login(email: email, password: password);
+  Future<void> createStockForUser(String userId) async {
+    try {
+      final stock = Stocks(
+        kafeType: '',
+        grainWeight: 0.0,
+        plantsQuantities: {},
+      );
 
-  //     if (userCredential != null && userCredential.user != null) {
-  //       final snapshot =
-  //           await FirebaseFirestore.instance
-  //               .collection('users')
-  //               .doc(userCredential.user!.uid)
-  //               .get();
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('stocks')
+          .doc('userStock')
+          .set(stock.toMap());
+    } catch (e) {
+      print("Create stock error: $e");
+    }
+  }
 
-  //       if (snapshot.exists) {
-  //         state = app.User.fromMap(snapshot.data()!);
-  //         return true;
-  //       }
-  //     }
-  //   } catch (e) {
-  //     print("Login error: $e");
-  //   }
-  //   return false;
-  // }
+  Future<Stocks?> getUserStock(String userId) async {
+    try {
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .collection('stocks')
+              .doc('userStock')
+              .get();
+
+      if (doc.exists) {
+        return Stocks.fromMap(doc.data()!);
+      }
+    } catch (e) {
+      print("Get stock error: $e");
+    }
+    return null;
+  }
+
+  Future<void> addPlantToUserStock(KafeType plant) async {
+    if (state == null) return;
+
+    Stocks? userStock = await getUserStock(state!.id!);
+    if (userStock != null) {
+      final name = plant.name;
+      final currentQty = userStock.plantsQuantities[name] ?? 0;
+      userStock.plantsQuantities[name] = currentQty + 1;
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(state!.id)
+          .collection('stocks')
+          .doc('userStock')
+          .update(userStock.toMap());
+    }
+  }
 
   Future<app.User?> loginInFirebase(String email, String password) async {
     try {
@@ -98,7 +154,12 @@ class UserNotifier extends StateNotifier<app.User?> {
 
         if (snapshot.exists) {
           final user = app.User.fromMap(snapshot.data()!);
-          state = user; // garde en mémoire dans le state
+          state = user;
+
+          await ref
+              .read(exploitationNotifier.notifier)
+              .getExploitationByUserId(user.id!);
+
           return user;
         }
       }
@@ -106,7 +167,7 @@ class UserNotifier extends StateNotifier<app.User?> {
       print("Login error: $e");
     }
 
-    return null; // En cas d’échec
+    return null;
   }
 
   Future<bool> logoutFromFirebase() async {

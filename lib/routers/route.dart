@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kafe_app/layout/app_scaffold.dart';
 import 'package:kafe_app/views/auth/login/login_view.dart';
 import 'package:kafe_app/views/auth/register/register_view.dart';
-import 'package:kafe_app/views/plantation/plantation_view.dart';
+import 'package:kafe_app/views/plantation/exploitation_view.dart';
 import 'package:kafe_app/views/concours/concours_view.dart';
 import 'package:kafe_app/views/profile/profile_page.dart';
 import 'package:go_router/go_router.dart';
@@ -54,13 +54,13 @@ final List<GoRoute> appRoutes = [
     },
   ),
   GoRoute(
-    path: '/plantation',
-    name: "Plantation",
+    path: '/exploitation',
+    name: "Exploitation",
     pageBuilder: (context, state) {
       return _buildSlideFromLeftTransitionPage(
         context,
         state,
-        AppScaffold(body: const PlantationView()),
+        AppScaffold(body: ExploitationView()),
       );
     },
   ),
@@ -108,16 +108,14 @@ Page _buildSlideFromLeftTransitionPage(
     key: state.pageKey,
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      // Animation de l'opacité
       final opacityAnimation = Tween<double>(
         begin: 0.0,
         end: 1.0,
       ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut));
 
-      // Animation de translation de gauche à droite
       final offsetAnimation = Tween<Offset>(
-        begin: Offset(-1.0, 0), // Départ depuis la gauche
-        end: Offset.zero, // Fin à la position initiale
+        begin: Offset(-1.0, 0),
+        end: Offset.zero,
       ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut));
 
       return FadeTransition(

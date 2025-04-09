@@ -2,7 +2,6 @@ import 'gato_scores.dart';
 
 class KafeType {
   final String name;
-  final String avatar;
   final Duration growTime;
   final int costDeeVee;
   final double fruitWeight;
@@ -10,17 +9,25 @@ class KafeType {
 
   KafeType({
     required this.name,
-    required this.avatar,
     required this.growTime,
     required this.costDeeVee,
     required this.fruitWeight,
     required this.gato,
   });
 
+  static KafeType empty() {
+    return KafeType(
+      name: 'Unknown',
+      growTime: Duration(minutes: 1),
+      costDeeVee: 1,
+      fruitWeight: 0.0,
+      gato: GatoScores.empty(),
+    );
+  }
+
   factory KafeType.fromMap(Map<String, dynamic> data) {
     return KafeType(
       name: data['name'],
-      avatar: data['avatar'],
       growTime: Duration(minutes: data['growTime'] ?? 1),
       costDeeVee: data['costDeeVee'] ?? 1,
       fruitWeight: (data['fruitWeight'] ?? 0.0).toDouble(),
@@ -31,7 +38,6 @@ class KafeType {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'avatar': avatar,
       'growTime': growTime.inMinutes,
       'costDeeVee': costDeeVee,
       'fruitWeight': fruitWeight,
@@ -41,7 +47,6 @@ class KafeType {
 
   KafeType copyWith({
     String? name,
-    String? avatar,
     Duration? growTime,
     int? costDeeVee,
     double? fruitWeight,
@@ -49,7 +54,6 @@ class KafeType {
   }) {
     return KafeType(
       name: name ?? this.name,
-      avatar: avatar ?? this.avatar,
       growTime: growTime ?? this.growTime,
       costDeeVee: costDeeVee ?? this.costDeeVee,
       fruitWeight: fruitWeight ?? this.fruitWeight,
