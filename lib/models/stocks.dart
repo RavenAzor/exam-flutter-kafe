@@ -4,19 +4,25 @@ class Stocks {
   final String kafeType;
   double grainWeight;
   Map<String, int> plantsQuantities;
+  Map<String, int> recolteQuantities;
 
   Stocks({
     required this.kafeType,
     required this.grainWeight,
     Map<String, int>? plantsQuantities,
-  }) : plantsQuantities = plantsQuantities ?? {};
+    Map<String, int>? recolteQuantities,
+  }) : plantsQuantities = plantsQuantities ?? {},
+       recolteQuantities = recolteQuantities ?? {};
 
-  void addPlant(KafeType plant) {
-    plantsQuantities.update(
-      plant.name,
-      (value) => value + 1,
-      ifAbsent: () => 1,
-    );
+  void removePlant(KafeType plant) {
+    if (plantsQuantities.containsKey(plant.name) &&
+        plantsQuantities[plant.name]! > 0) {
+      plantsQuantities.update(
+        plant.name,
+        (value) => value - 1,
+        ifAbsent: () => 0,
+      );
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -24,6 +30,7 @@ class Stocks {
       'kafeType': kafeType,
       'grainWeight': grainWeight,
       'plantsQuantities': plantsQuantities,
+      'recolteQuantities': recolteQuantities,
     };
   }
 
@@ -32,6 +39,21 @@ class Stocks {
       kafeType: map['kafeType'] ?? '',
       grainWeight: (map['grainWeight'] ?? 0).toDouble(),
       plantsQuantities: Map<String, int>.from(map['plantsQuantities'] ?? {}),
+      recolteQuantities: Map<String, int>.from(map['recolteQuantities'] ?? {}),
+    );
+  }
+
+  Stocks copyWith({
+    String? kafeType,
+    double? grainWeight,
+    Map<String, int>? plantsQuantities,
+    Map<String, int>? recolteQuantities,
+  }) {
+    return Stocks(
+      kafeType: kafeType ?? this.kafeType,
+      grainWeight: grainWeight ?? this.grainWeight,
+      plantsQuantities: plantsQuantities ?? this.plantsQuantities,
+      recolteQuantities: recolteQuantities ?? this.recolteQuantities,
     );
   }
 }

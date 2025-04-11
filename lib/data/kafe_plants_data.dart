@@ -40,3 +40,11 @@ List<KafeType> getKafePlants() {
     ),
   ];
 }
+
+KafeType getKafeTypeByName(String name) {
+  final List<KafeType> allKafeTypes = getKafePlants();
+  return allKafeTypes.firstWhere(
+    (type) => type.name == name,
+    orElse: () => KafeType.empty(),
+  );
+}

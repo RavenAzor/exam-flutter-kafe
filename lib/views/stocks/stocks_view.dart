@@ -12,6 +12,7 @@ import '../../constants/constants.dart';
 import '../../logic/provider/user_provider.dart';
 import '../../models/kafe_plant.dart';
 import '../../models/stocks.dart';
+import 'package:kafe_app/logic/provider/stock_provider.dart';
 
 class StocksView extends ConsumerStatefulWidget {
   const StocksView({super.key});
@@ -68,7 +69,8 @@ class _StocksViewState extends ConsumerState<StocksView>
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.green,
+          indicatorColor: backgroundAppColor(),
+          labelColor: colorTitle(),
           tabs: const [
             Tab(text: "Graines"),
             Tab(text: "Récolte"),
@@ -90,9 +92,7 @@ class _StocksViewState extends ConsumerState<StocksView>
                 }
 
                 return FutureBuilder(
-                  future: ref
-                      .read(userNotifier.notifier)
-                      .getUserStock(user.id!),
+                  future: ref.read(stockProvider.notifier).getUserStock(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -195,10 +195,118 @@ class _StocksViewState extends ConsumerState<StocksView>
               },
             ),
           ),
-          const Center(
-            child: Text(
-              "Bientôt",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Consumer(
+              builder: (context, ref, _) {
+                final user = ref.watch(userNotifier);
+
+                if (user == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return FutureBuilder(
+                  future: ref.read(stockProvider.notifier).getUserStock(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (!snapshot.hasData || snapshot.data == null) {
+                      return const Center(
+                        child: Text("Aucune plante récoltée."),
+                      );
+                    }
+
+                    final stock = snapshot.data!;
+                    final allPlants = getKafePlants();
+
+                    final plantEntries =
+                        stock.recolteQuantities.entries.map((entry) {
+                          final plant = allPlants.firstWhere(
+                            (p) => p.name == entry.key,
+                            orElse: () => KafePlant.empty(),
+                          );
+                          return MapEntry(plant, entry.value);
+                        }).toList();
+
+                    if (plantEntries.isEmpty) {
+                      return const Center(
+                        child: Text("Aucune plante récoltée."),
+                      );
+                    }
+
+                    return GridView.builder(
+                      itemCount: plantEntries.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1,
+                          ),
+                      itemBuilder: (context, index) {
+                        final entry = plantEntries[index];
+                        final plant = entry.key;
+                        final quantity = entry.value;
+
+                        return GestureDetector(
+                          onTap: () {
+                            _showPlantDialog(context, plant, quantity);
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: colorOfText(),
+                                    width: 2,
+                                  ),
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/grain.png',
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    "${plant.name}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 24,
+                                      color: colorOfTextBlack(),
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: Icon(
+                                  Icons.add,
+                                  size: 48,
+                                  color: colorOfTextBlack(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
             ),
           ),
           const Center(
@@ -296,7 +404,7 @@ void _showBoutiqueModal(BuildContext context, WidgetRef ref) {
                                           );
                                     } else if (item['type'] == 'plante') {
                                       ref
-                                          .read(userNotifier.notifier)
+                                          .read(stockProvider.notifier)
                                           .addPlantToUserStock(
                                             item['kafeType'],
                                           );
@@ -335,12 +443,10 @@ void _showBoutiqueModal(BuildContext context, WidgetRef ref) {
   );
 }
 
-// Génère un nom pour le champ secondaire, basé sur le nombre de champs existants
 String generateFieldName(int fieldCount) {
   return 'Champ secondaire $fieldCount';
 }
 
-// Fonction pour obtenir une spécialité aléatoire
 FieldSpeciality getRandomSpeciality() {
   List<FieldSpeciality> specialities = FieldSpeciality.values;
 
@@ -348,7 +454,6 @@ FieldSpeciality getRandomSpeciality() {
   return specialities[random.nextInt(specialities.length)];
 }
 
-// Fonction pour afficher la modale de détail du champ
 void _showPlantDialog(BuildContext context, KafeType plant, int quantity) {
   showDialog(
     context: context,

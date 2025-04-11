@@ -1,16 +1,18 @@
-# kafe_app
+# Le torréfacteur K
 
 A new Flutter project.
 
-## Getting Started
+## Comment lancer l'appli
 
-This project is a starting point for a Flutter application.
+### Précision :
 
-A few resources to get you started if this is your first Flutter project:
+Assurez vous d'avoir VS Code afin que le dossier puisse bien s'ouvrir dessus.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Démarche :
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+D'abord, il faut ouvrir le dossier "kafe_app" qui se trouve dans le dossier "exam-kafe", ensuite il faut appuyer sur l'explorateur (là ou s'est écrit Bureau > ...), écrire "cmd" (sans les guillements) et appuyer sur entrer. Un terminal va alors appraître. Ici il faudra écrire "code ." (sans les guillemets).
+
+Cette démarche va donc ouvrir le dossier dans VS Code. Il faut ensuite accèder au terminal de l'éditeur de code (en haut à gauche, il y a des carrées qui permettent d'afficher les différents éléments, appuyez sur celui avec un trait en bas).
+Ici, vous allez arriver sur PowerShell, faites bien attention à être dans le dossier "kafe_app". Si ce n'est pas le cas et que vous êtes dans le dossier "exam-kafe", écrivez dans le terminal "cd kafe_app" (sans les guillemets).
+
+Pour finir, lancer le projet en écrivant "flutter run" (sans les guillemets).

@@ -15,6 +15,10 @@ class KafeType {
     required this.gato,
   });
 
+  bool isEmpty() {
+    return name.isEmpty;
+  }
+
   static KafeType empty() {
     return KafeType(
       name: 'Unknown',

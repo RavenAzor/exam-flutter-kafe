@@ -8,6 +8,10 @@ class KafePlant implements KafeType {
 
   KafePlant({required this.kafeType, required this.plantedAt});
 
+  bool isEmpty() {
+    return kafeType?.isEmpty() ?? true && plantedAt == null;
+  }
+
   factory KafePlant.empty() {
     return KafePlant(kafeType: KafeType.empty(), plantedAt: null);
   }
@@ -21,6 +25,10 @@ class KafePlant implements KafeType {
       kafeType: KafeType.fromMap(data['cafeType']),
       plantedAt: DateTime.tryParse(data['plantedAt']) ?? DateTime.now(),
     );
+  }
+
+  factory KafePlant.fromKafeType(KafeType kafeType) {
+    return KafePlant(kafeType: kafeType, plantedAt: DateTime.now());
   }
 
   Map<String, dynamic> toMap() {
@@ -57,10 +65,15 @@ class KafePlant implements KafeType {
     );
   }
 
-  DateTime get harvestTime => plantedAt!.add(kafeType!.growTime);
+  DateTime get harvestTime {
+    if (plantedAt == null || kafeType == null) return DateTime.now();
+    return plantedAt!.add(growTime);
+  }
 
-  bool get isReadyForHarvest =>
-      plantedAt != null && DateTime.now().isAfter(harvestTime);
+  bool get isReadyForHarvest {
+    if (plantedAt == null || kafeType == null) return false;
+    return DateTime.now().isAfter(harvestTime);
+  }
 
   Duration get remainingTime {
     if (plantedAt == null || kafeType == null) return Duration.zero;
@@ -71,10 +84,8 @@ class KafePlant implements KafeType {
   double get growthProgress {
     if (plantedAt == null || kafeType == null) return 0.0;
     final elapsed = DateTime.now().difference(plantedAt!);
-    return (elapsed.inSeconds / kafeType!.growTime.inSeconds).clamp(0.0, 1.0);
+    return (elapsed.inSeconds / growTime.inSeconds).clamp(0.0, 1.0);
   }
-
-  bool get isEmpty => kafeType == null || plantedAt == null;
 
   @override
   String get name => kafeType?.name ?? '';

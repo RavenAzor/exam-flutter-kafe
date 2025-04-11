@@ -14,14 +14,13 @@ class ConcoursView extends StatelessWidget {
             right: 0,
             child: Center(
               child: Image.asset(
-                'assets/images/kafe_logo.jpg',
+                'assets/images/kafe-logo.jpg',
                 width: 200,
                 height: 200,
               ),
             ),
           ),
 
-          // Texte avec le pseudo en bas
           Positioned(
             bottom: 20,
             left: 0,

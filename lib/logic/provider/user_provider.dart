@@ -102,43 +102,6 @@ class UserProvider extends StateNotifier<app.User?> {
     }
   }
 
-  Future<Stocks?> getUserStock(String userId) async {
-    try {
-      final doc =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userId)
-              .collection('stocks')
-              .doc('userStock')
-              .get();
-
-      if (doc.exists) {
-        return Stocks.fromMap(doc.data()!);
-      }
-    } catch (e) {
-      print("Get stock error: $e");
-    }
-    return null;
-  }
-
-  Future<void> addPlantToUserStock(KafeType plant) async {
-    if (state == null) return;
-
-    Stocks? userStock = await getUserStock(state!.id!);
-    if (userStock != null) {
-      final name = plant.name;
-      final currentQty = userStock.plantsQuantities[name] ?? 0;
-      userStock.plantsQuantities[name] = currentQty + 1;
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(state!.id)
-          .collection('stocks')
-          .doc('userStock')
-          .update(userStock.toMap());
-    }
-  }
-
   Future<app.User?> loginInFirebase(String email, String password) async {
     try {
       final userCredential = await ref
